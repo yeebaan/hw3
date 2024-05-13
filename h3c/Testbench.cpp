@@ -169,21 +169,23 @@ void Testbench::feed_rgb() {
 	o_rst.write(true);
 	for (int_fast16_t row(0); row < height; row++) {
 		for (int_fast16_t col(0); col < width + 4; col++) {
-			write(get(row - 2, col - 2, 0));
-			write(get(row - 2, col - 2, 1));
-			write(get(row - 2, col - 2, 2));
-			write(get(row - 1, col - 2, 0));
-			write(get(row - 1, col - 2, 1));
-			write(get(row - 1, col - 2, 2));
-			write(get(row    , col - 2, 0));
-			write(get(row    , col - 2, 1));
-			write(get(row    , col - 2, 2));
-			write(get(row + 1, col - 2, 0));
-			write(get(row + 1, col - 2, 1));
-			write(get(row + 1, col - 2, 2));
-			write(get(row + 2, col - 2, 0));
-			write(get(row + 2, col - 2, 1));
-			write(get(row + 2, col - 2, 2));
+			rgb_t rgb{};
+			rgb.range(8 *  0 + 7, 8 *  0) = get(row - 2, col - 2, 0);
+			rgb.range(8 *  1 + 7, 8 *  1) = get(row - 2, col - 2, 1);
+			rgb.range(8 *  2 + 7, 8 *  2) = get(row - 2, col - 2, 2);
+			rgb.range(8 *  3 + 7, 8 *  3) = get(row - 1, col - 2, 0);
+			rgb.range(8 *  4 + 7, 8 *  4) = get(row - 1, col - 2, 1);
+			rgb.range(8 *  5 + 7, 8 *  5) = get(row - 1, col - 2, 2);
+			rgb.range(8 *  6 + 7, 8 *  6) = get(row    , col - 2, 0);
+			rgb.range(8 *  7 + 7, 8 *  7) = get(row    , col - 2, 1);
+			rgb.range(8 *  8 + 7, 8 *  8) = get(row    , col - 2, 2);
+			rgb.range(8 *  9 + 7, 8 *  9) = get(row + 1, col - 2, 0);
+			rgb.range(8 * 10 + 7, 8 * 10) = get(row + 1, col - 2, 1);
+			rgb.range(8 * 11 + 7, 8 * 11) = get(row + 1, col - 2, 2);
+			rgb.range(8 * 12 + 7, 8 * 12) = get(row + 2, col - 2, 0);
+			rgb.range(8 * 13 + 7, 8 * 13) = get(row + 2, col - 2, 1);
+			rgb.range(8 * 14 + 7, 8 * 14) = get(row + 2, col - 2, 2);
+			write(rgb);
 		}
 	}
 	while (true) {
@@ -197,9 +199,9 @@ void Testbench::fetch_result() {
 #endif
 	wait();
 	for (int_fast16_t row(0); row < height; row++) {
-		cout << row << endl;
+		//cout << row << endl;
 		for (int_fast16_t col(0); col < width + 4; col++) {
-			uint_fast8_t result = read();
+			sc_uint<8> result = read();
 			set(row, col - 4, 0, result);
 			set(row, col - 4, 1, result);
 			set(row, col - 4, 2, result);

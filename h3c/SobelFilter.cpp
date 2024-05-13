@@ -16,6 +16,8 @@ SobelFilter::SobelFilter(sc_module_name n) : sc_module(n) {
 #endif
 }
 
+SobelFilter::~SobelFilter() {}
+
 void SobelFilter::reset()
 {
 #ifndef NATIVE_SYSTEMC
@@ -27,17 +29,17 @@ void SobelFilter::reset()
 }
 
 rgb_t SobelFilter::read() {
-	rgb_t rgb{0};
+	rgb_t input{0};
 	{
 #ifndef NATIVE_SYSTEMC
 		HLS_DEFINE_PROTOCOL("in 1");
-		rgb = i_rgb.get();
+		input = i_rgb.get();
 #else
-		rgb = i_rgb.read();
+		input = i_rgb.read();
 #endif
 		wait();
 	}
-	return rgb;
+	return input;
 }
 
 template<typename T>
@@ -51,18 +53,43 @@ void SobelFilter::write(T result) {
 	wait();
 }
 
-SobelFilter::~SobelFilter() {}
-
 void SobelFilter::do_filter() {
 	reset();
-	std::array<uint8_t, 25> buffer{};
+	std::array<sc_uint<8>, 25> buffer{};
+#ifndef NATIVE_SYSTEMC
 	HLS_FLATTEN_ARRAY(buffer);
+#endif
 	while (true) {
-		HLS_CONSTRAIN_LATENCY(0, HLS_ACHIEVABLE, "");
-		HLS_PIPELINE_LOOP(HARD_STALL, 29, "pipeline 1");
-		for (uint8_t i{}; i < 25; i++) {
-			buffer[i] = (i < 20) ? buffer[i + 5] : (read() + read() + read()) / 3;
-		}
+#ifndef NATIVE_SYSTEMC
+		HLS_CONSTRAIN_LATENCY(0, HLS_ACHIEVABLE, "latency 1");
+		HLS_PIPELINE_LOOP(HARD_STALL, 1, "pipeline 1");
+#endif
+		rgb_t input{read()};
+		buffer[ 0] = buffer[ 5];
+		buffer[ 1] = buffer[ 6];
+		buffer[ 2] = buffer[ 7];
+		buffer[ 3] = buffer[ 8];
+		buffer[ 4] = buffer[ 9];
+		buffer[ 5] = buffer[10];
+		buffer[ 6] = buffer[11];
+		buffer[ 7] = buffer[12];
+		buffer[ 8] = buffer[13];
+		buffer[ 9] = buffer[14];
+		buffer[10] = buffer[15];
+		buffer[11] = buffer[16];
+		buffer[12] = buffer[17];
+		buffer[13] = buffer[18];
+		buffer[14] = buffer[19];
+		buffer[15] = buffer[20];
+		buffer[16] = buffer[21];
+		buffer[17] = buffer[22];
+		buffer[18] = buffer[23];
+		buffer[19] = buffer[24];
+		buffer[20] = (sc_uint<8>(sc_bv<8>(input.range(24 * 0 + 23, 24 * 0 + 16))) + sc_uint<8>(sc_bv<8>(input.range(24 * 0 + 15, 24 * 0 + 8))) + sc_uint<8>(sc_bv<8>(input.range(24 * 0 + 7, 24 * 0)))) / 3;
+		buffer[21] = (sc_uint<8>(sc_bv<8>(input.range(24 * 1 + 23, 24 * 1 + 16))) + sc_uint<8>(sc_bv<8>(input.range(24 * 1 + 15, 24 * 1 + 8))) + sc_uint<8>(sc_bv<8>(input.range(24 * 1 + 7, 24 * 1)))) / 3;
+		buffer[22] = (sc_uint<8>(sc_bv<8>(input.range(24 * 2 + 23, 24 * 2 + 16))) + sc_uint<8>(sc_bv<8>(input.range(24 * 2 + 15, 24 * 2 + 8))) + sc_uint<8>(sc_bv<8>(input.range(24 * 2 + 7, 24 * 2)))) / 3;
+		buffer[23] = (sc_uint<8>(sc_bv<8>(input.range(24 * 3 + 23, 24 * 3 + 16))) + sc_uint<8>(sc_bv<8>(input.range(24 * 3 + 15, 24 * 3 + 8))) + sc_uint<8>(sc_bv<8>(input.range(24 * 3 + 7, 24 * 3)))) / 3;
+		buffer[24] = (sc_uint<8>(sc_bv<8>(input.range(24 * 4 + 23, 24 * 4 + 16))) + sc_uint<8>(sc_bv<8>(input.range(24 * 4 + 15, 24 * 4 + 8))) + sc_uint<8>(sc_bv<8>(input.range(24 * 4 + 7, 24 * 4)))) / 3;
 		write( 
 				(
 				 buffer[ 0] *  1 +

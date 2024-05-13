@@ -38,7 +38,7 @@ class Testbench : public sc_module {
 		sc_time total_run_time;
 		template<typename T>
 			void write(T rgb);
-		rgb_t read();
+		result_t read();
 		template<typename T, typename U, typename V>
 			rgb_t get(T row, U col, V channel);
 		template<typename T, typename U, typename V, typename W>
