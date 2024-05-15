@@ -54,7 +54,7 @@ template <typename T> void SobelFilter::write(T result) {
 void SobelFilter::do_filter() {
   reset();
   std::array<sc_uint<8>, 25> buffer{};
-#define FILTER_FLATTEN_AND_PIPELINE 1
+#define FILTER_FLATTEN_AND_PIPELINE 0
 #ifndef NATIVE_SYSTEMC
 #if FILTER_FLATTEN_AND_PIPELINE
   HLS_FLATTEN_ARRAY(buffer);

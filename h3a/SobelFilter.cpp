@@ -54,7 +54,7 @@ template <typename T> void SobelFilter::write(T result) {
 void SobelFilter::do_filter() {
   reset();
   std::array<sc_uint<8>, 25> buffer{};
-#define FILTER_FLATTEN_AND_PIPELINE 1
+#define FILTER_FLATTEN_AND_PIPELINE 0
 #ifndef NATIVE_SYSTEMC
 #if FILTER_FLATTEN_AND_PIPELINE
   HLS_FLATTEN_ARRAY(buffer);
@@ -117,7 +117,7 @@ void SobelFilter::do_filter() {
                   sc_uint<8>(sc_bv<8>(input.range(24 * 4 + 15, 24 * 4 + 8))) +
                   sc_uint<8>(sc_bv<8>(input.range(24 * 4 + 7, 24 * 4)))) /
                  3;
-#define OPTIMAL_WIDTH 1
+#define OPTIMAL_WIDTH 0
 #if OPTIMAL_WIDTH
     const result_t result {
 #else
@@ -130,7 +130,7 @@ void SobelFilter::do_filter() {
         buffer[16] * 16 + buffer[17] * 26 + buffer[18] * 16 + buffer[19] * 4 +
         buffer[20] * 1 + buffer[21] * 4 + buffer[22] * 7 + buffer[23] * 4 +
         buffer[24] * 1)
-#define REPLACE_DIV_WITH_MUL 1
+#define REPLACE_DIV_WITH_MUL 0
 #if REPLACE_DIV_WITH_MUL
        * 15) >>
           12
